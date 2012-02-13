@@ -1,5 +1,6 @@
 # Compiled Files
 public/css/bootstrap.css
+public/css/css.css
 
 # Included packages
 node_modules
