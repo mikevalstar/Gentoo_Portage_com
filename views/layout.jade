@@ -1,6 +1,29 @@
-!!!
-html
-  head
-    title= title
-    link(rel='stylesheet', href='/stylesheets/style.css')
-  body!= body
+!!! 5
+html(lang="en")
+	head
+		title= title
+		link(rel='stylesheet', href='/css/bootstrap.css')
+		link(rel='stylesheet', href='/css/css.css')
+	body
+		.navbar.navbar-fixed-top
+			.navbar-inner
+				.container
+					a.brand(href="/") Gentoo-Portage
+					ul.nav
+						li.active 
+							a(href="#") Newest
+						li
+							a(href="#") News
+						li
+							a(href="#") Browse
+						li
+							a(href="#") USE Flags
+						li
+							a(href="#") GLSAs
+						li
+							a(href="#") More
+					form.navbar-search.pull-right
+						input.search-query(type="text", placeholder="Search")
+
+		#C.container
+			#CC!= body
