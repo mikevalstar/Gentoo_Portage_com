@@ -32,38 +32,47 @@ app.configure('production', function(){
 });
 
 // Build (Stylesheets)
-var lessParser1 = new(less.Parser)({
-    paths: ['.', './style'], // Specify search paths for @import directives
-});
-var lessParser2 = new(less.Parser)({
-    paths: ['.', './style'], // Specify search paths for @import directives
-});
-
 var lessBootstrapFile = path.join(__dirname, 'style/bootstrap.less');
 var cssBootstrapFile = path.join(__dirname, 'public/css/bootstrap.css');
-
-fs.readFile(lessBootstrapFile, 'utf8', function (e, data) {
-	lessParser1.parse(data, function (e, tree) {
-	    //tree.toCSS({ compress: true }); // Minify CSS output
-	    fs.writeFile(cssBootstrapFile, tree.toCSS(), function (err) {
-			if (err) throw err;
-			console.log(cssBootstrapFile + ' Written to disk!');
+var parseBootstrapLess = function(){
+	var lessParser = new(less.Parser)({
+	    paths: ['.', './style'], // Specify search paths for @import directives
+	});
+	
+	fs.readFile(lessBootstrapFile, 'utf8', function (e, data) {
+		lessParser.parse(data, function (e, tree) {
+		    //tree.toCSS({ compress: true }); // Minify CSS output
+		    fs.writeFile(cssBootstrapFile, tree.toCSS(), function (err) {
+				if (err) throw err;
+				console.log(cssBootstrapFile + ' Written to disk!');
+			});
 		});
 	});
-});
+};
 
 var lessGPFile = path.join(__dirname, 'style/g-p.less');
 var cssGPFile = path.join(__dirname, 'public/css/css.css');
-
-fs.readFile(lessGPFile, 'utf8', function (e, data) {
-	lessParser2.parse(data, function (e, tree) {
-	    //tree.toCSS({ compress: true }); // Minify CSS output
-	    fs.writeFile(cssGPFile, tree.toCSS(), function (err) {
-			if (err) throw err;
-			console.log(cssGPFile + ' Written to disk!');
+var parseGPLess = function(){
+	var lessParser = new(less.Parser)({
+	    paths: ['.', './style'], // Specify search paths for @import directives
+	});
+	
+	fs.readFile(lessGPFile, 'utf8', function (e, data) {
+		lessParser.parse(data, function (e, tree) {
+		    //tree.toCSS({ compress: true }); // Minify CSS output
+		    fs.writeFile(cssGPFile, tree.toCSS(), function (err) {
+				if (err) throw err;
+				console.log(cssGPFile + ' Written to disk!');
+			});
 		});
 	});
-});
+};
+
+//parseBootstrapLess();
+//parseGPLess();
+
+fs.watchFile(path.join(__dirname, 'style/variables.less'), parseBootstrapLess);
+fs.watchFile(lessGPFile, parseGPLess);
 
 // Routes
 app.get('/', routes.index);
