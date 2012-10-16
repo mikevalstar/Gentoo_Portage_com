@@ -1,13 +1,14 @@
 {
     "name": "gentoo_portage_com_website"
-  , "version": "3.0.1_pre"
+  , "version": "3.0.1pre"
   , "private": true
+  , "scripts": {
+    "start": "node app"
+  }
   , "dependencies": {
-      "express": ">= 2.5.0"
-    , "jade": ">= 0.0.1"
-    , "markdown-js": ">= 0.0.1"
-    , "mongoose": ">= 2.4.0"
-    , "session-mongoose": ">= 0.0.1"
-    , "less": ">= 0.0.1"
+    "express": "3.x",
+    "jade": "*",
+    "less-middleware": "*",
+    "markdown-js": "*"
   }
 }

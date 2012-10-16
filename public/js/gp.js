@@ -1,3 +1,3 @@
 $(function(){
-	$('.po').popover({placement: 'bottom'});
+	$('.po').popover({placement: 'bottom', trigger: 'hover'});
 });

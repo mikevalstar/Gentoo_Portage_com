@@ -3,85 +3,34 @@
  * Module dependencies.
  */
 
-var	express = require('express')
-	routes = require('./routes'),
-	less = require('less'),
-	path = require('path'),
-	fs = require('fs'),
-	sys = require('util');
+var express = require('express')
+  , routes = require('./routes')
+  , http = require('http')
+  , path = require('path');
 
-var app = module.exports = express.createServer();
-
-// Configuration
+var app = express();
 
 app.configure(function(){
+  app.set('port', process.env.PORT || 4128);
   app.set('views', __dirname + '/views');
   app.set('view engine', 'jade');
+  app.use(express.favicon());
+  app.use(express.logger('dev'));
   app.use(express.bodyParser());
   app.use(express.methodOverride());
+  app.use(express.cookieParser('TCLsecret'));
+  app.use(express.session());
   app.use(app.router);
-  app.use(express.static(__dirname + '/public'));
+  app.use(require('less-middleware')({ src: __dirname + '/public' }));
+  app.use(express.static(path.join(__dirname, 'public')));
 });
 
 app.configure('development', function(){
-  app.use(express.errorHandler({ dumpExceptions: true, showStack: true })); 
+  app.use(express.errorHandler());
 });
 
-app.configure('production', function(){
-  app.use(express.errorHandler()); 
-});
-
-// Build (Stylesheets)
-var lessBootstrapFile = path.join(__dirname, 'style/bootstrap.less');
-var cssBootstrapFile = path.join(__dirname, 'public/css/bootstrap.css');
-var parseBootstrapLess = function(curr, prev){
-	if(typeof(curr) == 'undefined' || curr.mtime.getTime() != prev.mtime.getTime()){
-			
-		var lessParser = new(less.Parser)({
-		    paths: ['.', './style'], // Specify search paths for @import directives
-		});
-		
-		fs.readFile(lessBootstrapFile, 'utf8', function (e, data) {
-			lessParser.parse(data, function (e, tree) {
-			    //tree.toCSS({ compress: true }); // Minify CSS output
-			    fs.writeFile(cssBootstrapFile, tree.toCSS(), function (err) {
-					if (err) throw err;
-					console.log(cssBootstrapFile + ' Written to disk!');
-				});
-			});
-		});
-	}
-};
-
-var lessGPFile = path.join(__dirname, 'style/g-p.less');
-var cssGPFile = path.join(__dirname, 'public/css/css.css');
-var parseGPLess = function(curr, prev){
-	if(typeof(curr) == 'undefined' || curr.mtime.getTime() != prev.mtime.getTime()){
-
-		var lessParser = new(less.Parser)({
-		    paths: ['.', './style'], // Specify search paths for @import directives
-		});
-		
-		fs.readFile(lessGPFile, 'utf8', function (e, data) {
-			lessParser.parse(data, function (e, tree) {
-			    //tree.toCSS({ compress: true }); // Minify CSS output
-			    fs.writeFile(cssGPFile, tree.toCSS(), function (err) {
-					if (err) throw err;
-					console.log(cssGPFile + ' Written to disk!');
-				});
-			});
-		});
-	}
-};
-
-parseBootstrapLess();
-parseGPLess();
-
-fs.watchFile(path.join(__dirname, 'style/variables.less'), parseBootstrapLess);
-fs.watchFile(lessGPFile, parseGPLess);
-
-// Routes
 app.get('/', routes.index);
 
-app.listen(3030);
-console.log("Express server listening on port %d in %s mode", app.address().port, app.settings.env);
+http.createServer(app).listen(app.get('port'), function(){
+  console.log("Express server listening on port " + app.get('port'));
+});
